@@ -23,13 +23,13 @@ public class Encoder extends LinearOpMode
 	DcMotor			 frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor;
 	BNO055IMU		 imu;
 	Orientation		 lastAngles = new Orientation();
-	double		   globalAngle = .30;
+	double		   	 globalAngle = .30;
 
 	double			  DIAMETRO_IN = 3.966;
 	double			  DIAMETRO_CM = 10.16;
 	double			  POLEGADA = 2.54;
 	double			  ENGRENAGEM = 2.6;
-	int				  TICKS_REV = 1120;
+	int			  TICKS_REV = 1120;
 
 
 	public void runOpMode() throws InterruptedException
@@ -67,7 +67,7 @@ public class Encoder extends LinearOpMode
 		telemetry.addData("Status", "Rodando");
 
 
-	   /*
+	   	/*
 		   Funções a executar abaixo
 		*/
 		while(opModeIsActive())
