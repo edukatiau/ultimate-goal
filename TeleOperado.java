@@ -112,16 +112,14 @@ public class TeleOperado extends LinearOpMode {
 				telemetry.addData("Status","Abrindo");
 				telemetry.update();
 				Garra.setPosition(.6);
-				sleep(1000);
-				Garra.setPosition(0);
+				sleep(250);
 			}
 			if(gamepad1.a && GarraOn == true){
 				GarraOn = !GarraOn;
 				telemetry.addData("Status","Fechando");
 				telemetry.update();
 				Garra.setPosition(.4);
-				sleep(1000);
-				Garra.setPosition(0);
+				sleep(250);
 			}
 			/*
 				Código para ligar e desligar o coletor
