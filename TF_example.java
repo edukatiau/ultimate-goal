@@ -67,6 +67,7 @@ public class TF_example extends LinearOpMode {
         // through list and display info for each recognition.
         if (recognitions.size() == 0) {
           telemetry.addData("TFOD", "No items detected.");
+          telemetry.addData("Zona Alvo", "A");
         } else {
           index = 0;
           // Iterate through list and call a function to
@@ -77,6 +78,12 @@ public class TF_example extends LinearOpMode {
             displayInfo(index);
             // Increment index.
             index = index + 1;
+          }
+          if (recognition.getLabel() == "Single"){
+            telemetry.addData("Zona Alvo", "B");
+          }
+          else if (recognition.getLabel() == "Quad"){
+            telemetry.addData("Zona Alvo", "C");
           }
         }
         telemetry.update();
