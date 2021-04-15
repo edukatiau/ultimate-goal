@@ -34,6 +34,7 @@ public class Autonomo1 extends LinearOpMode
     double		   	 globalAngle = .30;
 
     double			  DIAMETRO_IN = 3.966;
+    double            POLEGADA = 2.54;
     double			  ENGRENAGEM = 2.6;
     int			      TICKS_REV = 1120;
 
@@ -258,7 +259,8 @@ public class Autonomo1 extends LinearOpMode
     private void toFrente(int distancia, double power)
     {
         double CIRCUNFERENCIA = Math.PI * DIAMETRO_IN;
-        double ROTACOES = (distancia / CIRCUNFERENCIA ) / ENGRENAGEM;
+        double DISTANCIA_IN = distancia/POLEGADA;
+        double ROTACOES = (DISTANCIA_IN / CIRCUNFERENCIA ) / ENGRENAGEM;
         int targetEncoder = (int)(ROTACOES*TICKS_REV);
 
         resetEncoder();
