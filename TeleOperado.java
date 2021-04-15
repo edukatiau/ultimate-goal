@@ -69,8 +69,8 @@ public class TeleOperado extends LinearOpMode {
 		telemetry.update();
 		boolean GarraOn = false;
 		boolean ColetorOn = false;
-		double minVelo = -.5;
-		double maxVelo = .5;
+		double minVelo = -.75;
+		double maxVelo = .75;
 
 		while (opModeIsActive()){
 			
