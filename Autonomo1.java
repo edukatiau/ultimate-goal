@@ -124,6 +124,7 @@ public class Autonomo1 extends LinearOpMode
                     telemetry.addData("TFOD", "No items detected.");
                     telemetry.addData("Zona Alvo", "A");
                     doZonaA();
+                    break;
                 } else
                     {
                     index = 0;
@@ -139,9 +140,11 @@ public class Autonomo1 extends LinearOpMode
                     if (recognition.getLabel() == "Single") {
                         telemetry.addData("Zona Alvo", "B");
                         doZonaB();
+                        break;
                     } else if (recognition.getLabel() == "Quad") {
                         telemetry.addData("Zona Alvo", "C");
                         doZonaC();
+                        break;
                     }
                 }
                 telemetry.update();
