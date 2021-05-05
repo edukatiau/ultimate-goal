@@ -13,41 +13,41 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
-@TeleOp (name = "MyTeste1", group = "Run1")
-public class TeleOp extends LinearOpMode {
+@TeleOp (name = "TELE_TeleOp", group = "Run1")
+public class TELE_TeleOp extends LinearOpMode {
   
-  //Declaração dos Objetos
-  DcMotor			    frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor, Braco;
-  //DcMotor       Coletor, LancadorR, LancadorL;
-  Servo           Garra;
-      
-  @Override
+	//Declaração dos Objetos
+	DcMotor			frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor, Braco, Lancador;
+	//DcMotor			Coletor;
+	Servo				Garra;
+	  
+	@Override
 	public void runOpMode() {
-    
-    //Informa que está inicializando
+	
+		//Informa que está inicializando
 		telemetry.addData("Status", "Inicializando");
 		telemetry.update();
-    
-    //Instâncias dos Objetos
+	
+		//Instâncias dos Objetos
 		frontLeftMotor = hardwareMap.get(DcMotor.class, "front_left");
 		backLeftMotor = hardwareMap.get(DcMotor.class, "back_left");
 		frontRightMotor = hardwareMap.get(DcMotor.class, "front_right");
 		backRightMotor = hardwareMap.get(DcMotor.class, "back_right");
-    
+	
 		Braco = hardwareMap.get(DcMotor.class, "braco");
 		Garra = hardwareMap.get(Servo.class, "garra");
-    
-    //LancadorR = hardwareMap.get(DcMotor.class, "lancador");
-    //LancadorL = hardwareMap.get(DcMotor.class, "lancador");
+	
+		Lancador = hardwareMap.get(DcMotor.class, "lancador");
 		
 		//Coletor = hardwareMap.get(DcMotor.class, "coletor");
-    
-    //Define a direção dos motores
+	
+		//Define a direção dos motores
 		frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
 		backLeftMotor.setDirection(DcMotor.Direction.REVERSE);
 		frontRightMotor.setDirection(DcMotor.Direction.FORWARD);
 		backRightMotor.setDirection(DcMotor.Direction.FORWARD);
-    Braco.setDirection(DcMotor.Direction.FORWARD);
+		Braco.setDirection(DcMotor.Direction.FORWARD);
+		Lancador.setDirection(DcMotor.Direction.FORWARD);
 		//Coletor.setDirection(DcMotorSimple.Direction.FORWARD);
 
 		//Define como os motores atuarão quando a potência for zero
@@ -55,30 +55,30 @@ public class TeleOp extends LinearOpMode {
 		backLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 		frontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 		backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-    Braco.setDirection(DcMotor.ZeroPowerBehavior.FLOAT);
+		Braco.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 		//Coletor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-    
-    //Informa que a inicialização obteve êxito
+	
+		//Informa que a inicialização obteve êxito
 		telemetry.addData("Status", "Aguardando Start");
 		telemetry.addData("Bora da-lhe", "Tchê");
 		telemetry.update();
 
 		//Aguarda o piloto pressionar START
 		waitForStart();
-    double minVelo = -.5;
+		double minVelo = -.5;
 		double maxVelo = .5;
 		double veloBraco = 1;
 		boolean GarraOn = false;
-    
-    while (opModeIsActive()){
-      
-      double y = -gamepad1.left_stick_y; //frente e trás
+	
+		while (opModeIsActive()){
+	  
+			double y = -gamepad1.left_stick_y; //frente e trás
 			double x = gamepad1.left_stick_x; //esquerda e direita
 			double rx = gamepad1.right_stick_x; //360º no proprio eixo
-      
-      double bracoPower = gamepad2.left_stick_y;
-      
-      //Aumenta o Range da Velocidade
+	  
+			double bracoPower = gamepad2.left_stick_y;
+	  
+			//Aumenta o Range da Velocidade
 			if(gamepad1.right_bumper){
 				maxVelo += 0.25;
 				minVelo = -maxVelo;
@@ -90,11 +90,11 @@ public class TeleOp extends LinearOpMode {
 				minVelo = -maxVelo;
 				sleep(500);
 			}
-      
-      /*
-				Código para a movimentação
+	  
+			/*
+			Código para a movimentação
 			 */
-      double frontLeftPower = Range.clip((y + x + rx),minVelo,maxVelo);
+			double frontLeftPower = Range.clip((y + x + rx),minVelo,maxVelo);
 			double backLeftPower = Range.clip((y - x + rx),minVelo,maxVelo);
 			double frontRightPower = Range.clip((y - x - rx),minVelo,maxVelo);
 			double backRightPower = Range.clip((y + x - rx),minVelo,maxVelo);
@@ -103,11 +103,11 @@ public class TeleOp extends LinearOpMode {
 			backLeftMotor.setPower(backLeftPower);
 			frontRightMotor.setPower(frontRightPower);
 			backRightMotor.setPower(backRightPower);
-      
-      /*
-				Código para abrir e fechar a garra
-			 */
-      if(gamepad2.a && GarraOn == false){
+	  
+			/*
+			Código para abrir e fechar a garra
+			*/
+			if(gamepad2.a && GarraOn == false){
 				GarraOn = !GarraOn;
 				telemetry.addData("Status","Abrindo");
 				telemetry.update();
@@ -121,12 +121,22 @@ public class TeleOp extends LinearOpMode {
 				Garra.setPosition(0);
 				sleep(500);
 			}
-      
-      //Levantar e Descer o Braço
-      Braco.setPower(bracoPower);
-      
-      /*
-				Código para ligar e desligar o coletor
+	  
+			//Levantar e Descer o Braço
+			Braco.setPower(bracoPower);
+			
+			/*
+			Liga o Lançador
+			*/
+			if (gamepad2.b){
+				Lancador.setPower(1);
+			}
+			else{
+				Lancador.setPower(0);
+			}
+		
+			/*
+			Código para ligar e desligar o coletor
 			
 			if (gamepad1.b && ColetorOn == false){
 				ColetorOn = !ColetorOn;
@@ -138,14 +148,14 @@ public class TeleOp extends LinearOpMode {
 				Coletor.setPower(0);
 				sleep(250);
 			}
-      */
-      
-      telemetry.addData("Right Motor Power: ", frontRightMotor.getPower());
+			*/
+	  
+			telemetry.addData("Right Motor Power: ", frontRightMotor.getPower());
 			telemetry.addData("Left Motor Power: ", frontLeftMotor.getPower());
 			telemetry.addData("Velocidade Maxima", maxVelo );
 			telemetry.addData("Velocidade Minima", minVelo );
-      telemetry.update();
-      
-    }
-  }
+			telemetry.update();
+	  
+		}
+	}
 }
