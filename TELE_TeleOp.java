@@ -71,7 +71,6 @@ public class TELE_TeleOp extends LinearOpMode {
 		waitForStart();
 		double minVelo = -.5;
 		double maxVelo = .5;
-		double veloBraco = 1;
 		boolean GarraOn = false;
 		int position = 0;
 		double kP = .4;
