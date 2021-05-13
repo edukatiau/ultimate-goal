@@ -78,6 +78,12 @@ public class RTeleOp extends LinearOpMode {
         double kP = .4;
         double BracoPower = 50;
         boolean BracoOn = false;
+	int menor, maior, valor = 0;
+	    
+	valor = Braco.getCurrentPosition();
+
+	maior = valor;
+	menor = valor;
 
         while (opModeIsActive()){
 
@@ -144,7 +150,20 @@ public class RTeleOp extends LinearOpMode {
 
             Braco.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             Braco.setVelocity(BracoPower);
-
+		
+		while(Braco.isBusy()){
+			for(int i = 1; i <= 5; i++){
+				valor = Braco.getCurrentPosition();
+				if(maior < valor){
+					maior = valor;
+				}
+				if(menor > valor){
+					menor = valor;
+				}
+	     		} 
+		}
+	    
+		
             /** Liga o Lançador enquanto pressionado */
             if (gamepad2.x){
                 Lancador.setPower(1);
