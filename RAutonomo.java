@@ -125,10 +125,12 @@ public class RAutonomo extends LinearOpMode {
         telemetry.addData(">", "Aguardando START");
         telemetry.update();
         waitForStart();
-
-        /** Define variáveis e constantes */
+        
         telemetry.addData("Status", "Rodando");
-
+        /** Define variáveis e constantes */
+        
+        
+        
         /** Funções a executar abaixo */
         if (opModeIsActive()) {
             while (opModeIsActive()) {
@@ -136,26 +138,36 @@ public class RAutonomo extends LinearOpMode {
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
                         telemetry.addData("# Object Detected", updatedRecognitions.size());
+                        if (updatedRecognitions.size() == 0 ) {
+                            // empty list.  no objects recognized.
+                            telemetry.addData("TFOD", "No items detected.");
+                            telemetry.addData("Target Zone", "A");
+                            zonaA();
+                            tfod.shutdown();
+                        } else {
+                          // list is not empty.
+                          // step through the list of recognitions and display boundary info.
+                          int i = 0;
+                          for (Recognition recognition : updatedRecognitions) {
+                              telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                              telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                                      recognition.getLeft(), recognition.getTop());
+                              telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                                      recognition.getRight(), recognition.getBottom());
 
-                        int i = 0;
-                        for (Recognition recognition : updatedRecognitions) {
-                            telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                            telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                                    recognition.getLeft(), recognition.getTop());
-                            telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                                    recognition.getRight(), recognition.getBottom());
-                            if (recognition.getLabel() == "Single"){
-                                zonaB();
-                                break;
-                            }
-                            else if (recognition.getLabel() == "Quad"){
-                                zonaC();
-                                break;
-                            }
-                            else{
-                                zonaA();
-                                //break;
-                            }
+                              // check label to see which target zone to go after.
+                              if (recognition.getLabel().equals("Single")) {
+                                  telemetry.addData("Target Zone", "B");
+                                  zonaB();
+                                  tfod.shutdown();
+                              } else if (recognition.getLabel().equals("Quad")) {
+                                  telemetry.addData("Target Zone", "C");
+                                  zonaC();
+                                  tfod.shutdown();
+                              } else {
+                                  telemetry.addData("Target Zone", "UNKNOWN");
+                              }
+                          }
                         }
                         telemetry.update();
                     }
@@ -401,15 +413,15 @@ public class RAutonomo extends LinearOpMode {
         OpenGarra();
     }
     private void zonaC(){
-        telemetry.addData("Zona", "C");
+        telemetry.addData("Msg", "To indo pra zona C");
         sleep(1000);
     }
     private void zonaB(){
-        telemetry.addData("Zona", "B");
+        telemetry.addData("Msg", "To indo pra zona B");
         sleep(1000);
     }
     private void zonaA(){
-        telemetry.addData("Zona", "A");
+        telemetry.addData("Msg", "To indo pra zona A");
         sleep(1000);
     }
 }
