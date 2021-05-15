@@ -89,7 +89,7 @@ public class RTeleOp extends LinearOpMode {
 
             /** Define variáveis dos Joysticks do Piloto 1 */
             double y = -gamepad1.left_stick_y; //frente e trás
-            double x = gamepad1.left_stick_x; //esquerda e direita
+            double x = gamepad1.left_stick_x * 1.1; //esquerda e direita
             double rx = gamepad1.right_stick_x; //360º no proprio eixo
 
             //Aumenta o Range da Velocidade
