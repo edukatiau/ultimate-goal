@@ -110,20 +110,6 @@ public class RTeleOp extends LinearOpMode {
             double backLeftPower = Range.clip((y - x + rx),minVelo,maxVelo);
             double frontRightPower = Range.clip((y - x - rx),minVelo,maxVelo);
             double backRightPower = Range.clip((y + x - rx),minVelo,maxVelo);
-	    
-	    if (Math.abs(frontLeftPower) > 1 || Math.abs(backLeftPower) > 1 || Math.abs(frontRightPower) > 1 || Math.abs(backRightPower) > 1) {
-		    // Encontra a maior potência
-		    double max = 0;
-		    max = Math.max(Math.abs(frontLeftPower), Math.abs(backLeftPower));
-		    max = Math.max(Math.abs(frontRightPower), max);
-		    max = Math.max(Math.abs(backRightPower), max);
-
-		    // Divide todos pelo máximo
-		    frontLeftPower /= max;
-		    backLeftPower /= max;
-		    frontRightPower /= max;
-		    backRightPower /= max;
-            }	
 	
             frontLeftMotor.setPower(frontLeftPower);
             backLeftMotor.setPower(backLeftPower);
