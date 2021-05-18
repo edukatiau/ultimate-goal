@@ -417,6 +417,7 @@ public class RAutonomo extends LinearOpMode {
 	}
 	private void zonaB(){
 		telemetry.addData("Msg", "To indo pra zona B");
+		toFrente(150, .5);
 		sleep(1000);
 	}
 	private void zonaA(){
