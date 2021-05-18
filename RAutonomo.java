@@ -29,10 +29,9 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
 @Autonomous(name = "RAutonomo", group = "Autonomous", preselectTeleOp = "RTeleOp")
 public class RAutonomo extends LinearOpMode {
-	DcMotor		 frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor, Lancador;
-	//DcMotor			Coletor;
+	DcMotor		 frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor, Lancador, Coletor;
 	DcMotorEx	   Braco;
-	Servo		Garra,Dedo;
+	Servo		Garra;
 	BNO055IMU	   imu;
 	Orientation	 lastAngles = new Orientation();
 	double		  globalAngle = .30;
@@ -76,18 +75,20 @@ public class RAutonomo extends LinearOpMode {
 		// HUB 2
 		Braco = hardwareMap.get(DcMotorEx.class, "braco");
 		Lancador = hardwareMap.get(DcMotor.class, "lancador");
+		Coletor = hardwareMap.get(DcMotor.class, "coletor");
+		Transicao = hardwareMap.get(DcMotor.class, "transicao");
 		Garra = hardwareMap.get(Servo.class, "garra");
-		Dedo = hardwareMap.get(Servo.class, "dedo");
-		//Coletor = hardwareMap.get(DcMotor.class, "coletor");
 
 		/** Define a direção dos motores */
 		frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
 		backLeftMotor.setDirection(DcMotor.Direction.REVERSE);
 		frontRightMotor.setDirection(DcMotor.Direction.FORWARD);
 		backRightMotor.setDirection(DcMotor.Direction.FORWARD);
+		
 		Braco.setDirection(DcMotor.Direction.FORWARD);
 		Lancador.setDirection(DcMotor.Direction.FORWARD);
-		//Coletor.setDirection(DcMotorSimple.Direction.FORWARD);
+		Coletor.setDirection(DcMotor.Direction.FORWARD);
+		Transicao.setDirection(DcMotor.Direction.REVERSE);
 
 		/** Define como os motores atuarão quando a potência for zero */
 		frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -96,7 +97,8 @@ public class RAutonomo extends LinearOpMode {
 		backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 		Braco.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 		Lancador.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-		//Coletor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+		Coletor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+		Transicao.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 		/** Reseta os Encoders */
 		resetEncoder();
@@ -118,7 +120,7 @@ public class RAutonomo extends LinearOpMode {
 			tfod.activate();
 
 			// Zoom e Resolução
-			tfod.setZoom(1.5, 16.0 / 9.0);
+			tfod.setZoom(1.3, 16.0 / 9.0);
 		}
 
 		/** Aguarda o piloto pressionar START */
@@ -126,10 +128,7 @@ public class RAutonomo extends LinearOpMode {
 		telemetry.update();
 		waitForStart();
 		
-		telemetry.addData("Status", "Rodando");
-		/** Define variáveis e constantes */
-		
-		
+		telemetry.addData("Status", "Rodando");		
 		
 		/** Funções a executar abaixo */
 		if (opModeIsActive()) {
@@ -265,23 +264,22 @@ public class RAutonomo extends LinearOpMode {
 		int i = 0;
 		do {
 			if (degrees < 0) {   // gira para direita
-				leftPower = power;
-				rightPower = -power;
-			} else if (degrees > 0) {   // gira para esquerda
 				leftPower = -power;
 				rightPower = power;
+			} else if (degrees > 0) {   // gira para esquerda
+				leftPower = power;
+				rightPower = -power;
 			} else return;
 
 			// define a potência para o giro
 			frontLeftMotor.setPower(leftPower);
-			frontRightMotor.setPower(rightPower);
 			backLeftMotor.setPower(leftPower);
+			frontRightMotor.setPower(rightPower);
 			backRightMotor.setPower(rightPower);
 			i++;
 
 			while(frontLeftMotor.isBusy() || frontRightMotor.isBusy() || backLeftMotor.isBusy() || backRightMotor.isBusy()) {
-				telemetry.addData("Situação", "Girando");
-				telemetry.addData("Posição/Rotação", frontRightMotor.getCurrentPosition());
+				telemetry.addData("Status", "Girando");
 				telemetry.addData("Angulo", getAngle());
 				telemetry.update();
 			}
@@ -340,7 +338,7 @@ public class RAutonomo extends LinearOpMode {
 		backLeftMotor.setPower(power);
 
 		while(frontLeftMotor.isBusy() || frontRightMotor.isBusy() || backLeftMotor.isBusy() || backRightMotor.isBusy()) {
-			telemetry.addData("Situação", "Andando");
+			telemetry.addData("Status", "Andando");
 			telemetry.addData("Posição/Rotação", frontRightMotor.getCurrentPosition());
 			telemetry.addData("Angulo", getAngle());
 			telemetry.update();
@@ -363,7 +361,7 @@ public class RAutonomo extends LinearOpMode {
 		backLeftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		Braco.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		Lancador.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		//Coletor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		Coletor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 		frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -371,17 +369,19 @@ public class RAutonomo extends LinearOpMode {
 		backLeftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		Braco.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		Lancador.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-		//Coletor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		Coletor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 	}
 
 	private void OpenGarra()
 	{
 		Garra.setPosition(1);
+		telemetry.addData("Status","Abrindo Garra");
 	}
 	private void CloseGarra()
 	{
 		Garra.setPosition(.5);
+		telemetry.addData("Status","Fechando Garra");
 	}
 	private void LancadorOn()
 	{
@@ -393,8 +393,7 @@ public class RAutonomo extends LinearOpMode {
 	}
 	private void LevantaBraco()
 	{
-		CloseGarra();
-		sleep(500);
+		telemetry.addData("Status","Subindo Braço");
 		position = 200;
 		Braco.setTargetPosition(position);
 		BracoPower += (Braco.getCurrentPosition() - position) * kP;
@@ -403,13 +402,12 @@ public class RAutonomo extends LinearOpMode {
 	}
 	private void AbaixaBraco()
 	{
+		telemetry.addData("Status","Baixando Braço");
 		position = 0;
 		Braco.setTargetPosition(position);
 		BracoPower += (Braco.getCurrentPosition() - position) * kP;
 		Braco.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 		Braco.setVelocity(BracoPower);
-		sleep(500);
-		OpenGarra();
 	}
 	private void zonaC(){
 		telemetry.addData("Msg", "To indo pra zona C");
@@ -417,7 +415,11 @@ public class RAutonomo extends LinearOpMode {
 		rotate(-45,.5);
 		toFrente(30, .5);
 		AbaixaBraco();
+		sleep(750);
 		OpenGarra();
+		LevantaBraco();
+		rotate(45, .5);
+		toFrente(-30, .5);
 		sleep(1000);
 	}
 	private void zonaB(){
