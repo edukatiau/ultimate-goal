@@ -413,15 +413,28 @@ public class RAutonomo extends LinearOpMode {
 	}
 	private void zonaC(){
 		telemetry.addData("Msg", "To indo pra zona C");
+		toFrente(180, .5);
+		rotate(-45,.5);
+		toFrente(30, .5);
+		AbaixaBraco();
+		OpenGarra();
 		sleep(1000);
 	}
 	private void zonaB(){
 		telemetry.addData("Msg", "To indo pra zona B");
 		toFrente(150, .5);
+		rotate(-45,.5);
+		AbaixaBraco();
+		OpenGarra();
 		sleep(1000);
 	}
 	private void zonaA(){
 		telemetry.addData("Msg", "To indo pra zona A");
+		toFrente(90, .5);
+		rotate(-45,.5);
+		toFrente(30, .5);
+		AbaixaBraco();
+		OpenGarra();
 		sleep(1000);
 	}
 }
