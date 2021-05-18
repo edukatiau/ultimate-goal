@@ -34,7 +34,7 @@ public class RAutonomo extends LinearOpMode {
 	Servo		Garra;
 	BNO055IMU	   imu;
 	Orientation	 lastAngles = new Orientation();
-	double		  globalAngle = .30;
+	double		  globalAngle = 0;
 
 	double		  DIAMETRO_IN = 3.966;
 	double		  POLEGADA = 2.54;
@@ -141,8 +141,8 @@ public class RAutonomo extends LinearOpMode {
 							// empty list.  no objects recognized.
 							telemetry.addData("TFOD", "No items detected.");
 							telemetry.addData("Target Zone", "A");
-							zonaA();
 							tfod.shutdown();
+							zonaA();
 						} else {
 						  // list is not empty.
 						  // step through the list of recognitions and display boundary info.
@@ -157,14 +157,15 @@ public class RAutonomo extends LinearOpMode {
 							  // check label to see which target zone to go after.
 							  if (recognition.getLabel().equals("Single")) {
 								  telemetry.addData("Target Zone", "B");
-								  zonaB();
 								  tfod.shutdown();
+								  zonaB();
 							  } else if (recognition.getLabel().equals("Quad")) {
 								  telemetry.addData("Target Zone", "C");
-								  zonaC();
 								  tfod.shutdown();
+								  zonaC();
 							  } else {
 								  telemetry.addData("Target Zone", "UNKNOWN");
+								  tfod.shutdown();
 							  }
 							}
 						}
