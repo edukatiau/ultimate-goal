@@ -29,7 +29,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
 @Autonomous(name = "RAutonomo", group = "Autonomous", preselectTeleOp = "RTeleOp")
 public class RAutonomo extends LinearOpMode {
-	DcMotor		 frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor, Lancador, Coletor;
+	DcMotor		 frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor, Lancador, Coletor, Transicao;
 	DcMotorEx	   Braco;
 	Servo		Garra;
 	BNO055IMU	   imu;
