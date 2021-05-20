@@ -27,7 +27,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.Came
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
-@Autonomous(name = "RAutonomo", group = "Autonomous", preselectTeleOp = "RTeleOp")
+@Autonomous(name = "TESTE Funções Autonomo", group = "Autonomous", preselectTeleOp = "RTeleOp")
 public class RAutonomo extends LinearOpMode {
 	DcMotor		 frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor, Lancador, Coletor, Transicao;
 	DcMotorEx	   Braco;
@@ -139,13 +139,18 @@ public class RAutonomo extends LinearOpMode {
 				telemetry.addData("Position", position);
 				telemetry.update();
         
-        int j = 1;
-        do{
-        toFrente(60, .5);
-        rotate(90, .5);
-          i++;
-        } while(j != 4)
-      }
+				int j = 1;
+				do{
+					toFrente(60, .5);
+					rotate(90, .5);
+					i++;
+				}while(j != 4);
+
+				abaixaBraco();
+				sleep(500);
+				openGarra();
+				toFrente(30, -.5);
+      			}
 		}
 
 		if (tfod != null) {
