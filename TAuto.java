@@ -28,7 +28,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
 @Autonomous(name = "TESTE Funções Autonomo", group = "Autonomous", preselectTeleOp = "RTeleOp")
-public class RAutonomo extends LinearOpMode {
+public class TAutonomo extends LinearOpMode {
 	DcMotor		 frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor, Lancador, Coletor, Transicao;
 	DcMotorEx	   Braco;
 	Servo		Garra;
@@ -122,7 +122,12 @@ public class RAutonomo extends LinearOpMode {
 			// Zoom e Resolução
 			tfod.setZoom(1.3, 16.0 / 9.0);
 		}
-
+		
+		if(gamepad2.a){
+			LevantaBraco();
+			CloseGarra();
+		}
+		
 		/** Aguarda o piloto pressionar START */
 		telemetry.addData(">", "Aguardando START");
 		telemetry.update();
@@ -146,15 +151,19 @@ public class RAutonomo extends LinearOpMode {
 					i++;
 				}while(j != 4);
 
-				abaixaBraco();
+				AbaixaBraco();
 				sleep(500);
-				openGarra();
+				OpenGarra();
 				toFrente(30, -.5);
+				
+				LancadorOn();
+				sleep(500);
+				TransicaoOn();
+				sleep(2000);
+				LancadorOff();
+				TransicaoOff();
+				
       			}
-		}
-
-		if (tfod != null) {
-			tfod.shutdown();
 		}
 	}
 	/**
@@ -359,15 +368,25 @@ public class RAutonomo extends LinearOpMode {
 	private void LancadorOn()
 	{
 		Lancador.setPower(1);
+		telemetry.addData("Status","Lançador Ligado");
 	}
 	private void LancadorOff()
 	{
 		Lancador.setPower(0);
 	}
+	private void TransicaoOn()
+	{
+		Transicao.setPower(1);
+		telemetry.addData("Status","Transicao Ligado");
+	}
+	private void TransicaoOff()
+	{
+		Transicao.setPower(0);
+	}
 	private void LevantaBraco()
 	{
 		telemetry.addData("Status","Subindo Braço");
-		position = 200;
+		position = 0;
 		Braco.setTargetPosition(position);
 		BracoPower += (Braco.getCurrentPosition() - position) * kP;
 		Braco.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -376,7 +395,7 @@ public class RAutonomo extends LinearOpMode {
 	private void AbaixaBraco()
 	{
 		telemetry.addData("Status","Baixando Braço");
-		position = 0;
+		position = 250;
 		Braco.setTargetPosition(position);
 		BracoPower += (Braco.getCurrentPosition() - position) * kP;
 		Braco.setMode(DcMotor.RunMode.RUN_TO_POSITION);
