@@ -167,7 +167,6 @@ public class RTeleOp extends LinearOpMode {
 			if (gamepad1.x && LancadorOn == false){
 				LancadorOn = true;
 				Lancador.setVelocity(rpmTicks(5500));
-				//Transicao.setPower(1);
 				sleep(250);
 			}
 			if(gamepad1.x && LancadorOn == true){
@@ -181,7 +180,6 @@ public class RTeleOp extends LinearOpMode {
 			if (gamepad1.b && ColetorOn == false){
 				ColetorOn = !ColetorOn;
 				Coletor.setPower(1);
-				//Transicao.setPower(1);
 				sleep(250);
 			}
 			if (gamepad1.b && ColetorOn == true){
@@ -190,7 +188,7 @@ public class RTeleOp extends LinearOpMode {
 				sleep(250);
 			}
 			
-			
+			/** Código para ligar e desligar a transicao */
 			if (gamepad1.y && TransicaoOn == false){
 				TransicaoOn = !TransicaoOn;
 				Transicao.setPower(1);
@@ -202,11 +200,6 @@ public class RTeleOp extends LinearOpMode {
 				sleep(250);
 			}
 			
-			/*
-			if((Lancador.getPower() == 0) && (Coletor.getPower() == 0)){
-				Transicao.setPower(0);
-			}
-			*/
 			
 			telemetry.addData("FRight Motor Power: ", frontRightMotor.getPower());
 			telemetry.addData("BRight Motor Power: ", backRightMotor.getPower());
