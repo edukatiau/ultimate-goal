@@ -113,8 +113,8 @@ public class RAutonomo extends LinearOpMode {
 		imu.initialize(parameters);
 
 		/** Inicializa o Vuforia */
-		initVuforia();
-		initTfod();
+		//initVuforia();
+		//initTfod();
 
 		if (tfod != null) {
 			tfod.activate();
