@@ -71,6 +71,9 @@ public class Encoder extends LinearOpMode
 		*/
 		while(opModeIsActive())
 		{
+			toFrente(60, .5);
+			rotate(45, .5);
+			toFrente(30, .5);
 			telemetry.addData("Angulo", getAngle());
 			telemetry.update();
 		}
