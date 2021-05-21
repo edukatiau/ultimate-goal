@@ -26,7 +26,6 @@ public class Encoder extends LinearOpMode
 	double		   	 globalAngle = .30;
 
 	double			  DIAMETRO_IN = 3.966;
-	double			  DIAMETRO_CM = 10.16;
 	double			  POLEGADA = 2.54;
 	double			  ENGRENAGEM = 2.6;
 	int			  TICKS_REV = 1120;
@@ -168,8 +167,9 @@ public class Encoder extends LinearOpMode
 
 	private void toFrente(int distancia, double power)
 	{
-		double CIRCUNFERENCIA = Math.PI * DIAMETRO_CM;
-		double ROTACOES = (distancia / CIRCUNFERENCIA ) / ENGRENAGEM;
+		double CIRCUNFERENCIA = Math.PI * DIAMETRO_IN;
+		double DISTANCIA_IN = distancia * POLEGADA;
+		double ROTACOES = (DISTANCIA_IN / CIRCUNFERENCIA ) / ENGRENAGEM;
 		int targetEncoder = (int)(ROTACOES*TICKS_REV);
 
 		resetEncoder();
