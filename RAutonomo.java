@@ -140,7 +140,7 @@ public class RAutonomo extends LinearOpMode {
 						if (updatedRecognitions.size() == 0 ) {
 							// empty list.  no objects recognized.
 							telemetry.addData("TFOD", "No items detected.");
-							telemetry.addData("Target Zone", "A");
+							telemetry.addData("Zona Alvo", "A");
 							tfod.shutdown();
 							zonaA();
 						} else {
@@ -156,15 +156,15 @@ public class RAutonomo extends LinearOpMode {
 
 							  // check label to see which target zone to go after.
 							  if (recognition.getLabel().equals("Single")) {
-								  telemetry.addData("Target Zone", "B");
+								  telemetry.addData("Zona Alvo", "B");
 								  tfod.shutdown();
 								  zonaB();
 							  } else if (recognition.getLabel().equals("Quad")) {
-								  telemetry.addData("Target Zone", "C");
+								  telemetry.addData("Zona Alvo", "C");
 								  tfod.shutdown();
 								  zonaC();
 							  } else {
-								  telemetry.addData("Target Zone", "UNKNOWN");
+								  telemetry.addData("Zona Alvo", "DESCONHECIDA");
 								  tfod.shutdown();
 							  }
 							}
@@ -210,7 +210,7 @@ public class RAutonomo extends LinearOpMode {
 		int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
 				"tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 		TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-		tfodParameters.minResultConfidence = 0.8f;
+		tfodParameters.minResultConfidence = 0.6f;
 		tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
 		tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
 	}
@@ -412,32 +412,33 @@ public class RAutonomo extends LinearOpMode {
 	}
 	private void zonaC(){
 		telemetry.addData("Msg", "To indo pra zona C");
-		toFrente(180, .5);
-		rotate(-45,.5);
-		toFrente(30, .5);
-		AbaixaBraco();
-		sleep(750);
-		OpenGarra();
-		LevantaBraco();
-		rotate(45, .5);
-		toFrente(-30, .5);
-		sleep(1000);
+		telemetry.update();
+		//toFrente(180, .5);
+		//rotate(-45,.5);
+		//toFrente(30, .5);
+		//AbaixaBraco();
+		//sleep(750);
+		//OpenGarra();
+		//LevantaBraco();
+		//rotate(45, .5);
+		//toFrente(-30, .5);
+		sleep(5000);
 	}
 	private void zonaB(){
 		telemetry.addData("Msg", "To indo pra zona B");
-		toFrente(150, .5);
-		rotate(-45,.5);
-		AbaixaBraco();
-		OpenGarra();
-		sleep(1000);
+		//toFrente(150, .5);
+		//rotate(-45,.5);
+		//AbaixaBraco();
+		//OpenGarra();
+		sleep(5000);
 	}
 	private void zonaA(){
 		telemetry.addData("Msg", "To indo pra zona A");
-		toFrente(90, .5);
-		rotate(-45,.5);
-		toFrente(30, .5);
-		AbaixaBraco();
-		OpenGarra();
-		sleep(1000);
+		//toFrente(90, .5);
+		//rotate(-45,.5);
+		//toFrente(30, .5);
+		//AbaixaBraco();
+		//OpenGarra();
+		sleep(5000);
 	}
 }
