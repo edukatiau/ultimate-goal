@@ -34,7 +34,7 @@ public class RAutonomo extends LinearOpMode {
 	Servo		Garra;
 	BNO055IMU	   imu;
 	Orientation	 lastAngles = new Orientation();
-	double		  globalAngle = 0;
+	double		  globalAngle = .30;
 
 	double		  DIAMETRO_IN = 3.966;
 	double		  POLEGADA = 2.54;
@@ -87,7 +87,7 @@ public class RAutonomo extends LinearOpMode {
 		
 		Braco.setDirection(DcMotor.Direction.FORWARD);
 		Lancador.setDirection(DcMotor.Direction.FORWARD);
-		Coletor.setDirection(DcMotor.Direction.FORWARD);
+		Coletor.setDirection(DcMotor.Direction.REVERSE);
 		Transicao.setDirection(DcMotor.Direction.REVERSE);
 
 		/** Define como os motores atuarão quando a potência for zero */
@@ -140,9 +140,9 @@ public class RAutonomo extends LinearOpMode {
 						if (updatedRecognitions.size() == 0 ) {
 							// empty list.  no objects recognized.
 							telemetry.addData("TFOD", "No items detected.");
-							telemetry.addData("Zona Alvo", "A");
-							tfod.shutdown();
+							telemetry.addData("Target Zone", "A");
 							zonaA();
+							tfod.shutdown();
 						} else {
 						  // list is not empty.
 						  // step through the list of recognitions and display boundary info.
@@ -156,25 +156,22 @@ public class RAutonomo extends LinearOpMode {
 
 							  // check label to see which target zone to go after.
 							  if (recognition.getLabel().equals("Single")) {
-								  telemetry.addData("Zona Alvo", "B");
-								  tfod.shutdown();
+								  telemetry.addData("Target Zone", "B");
 								  zonaB();
+								  tfod.shutdown();
 							  } else if (recognition.getLabel().equals("Quad")) {
-								  telemetry.addData("Zona Alvo", "C");
-								  tfod.shutdown();
+								  telemetry.addData("Target Zone", "C");
 								  zonaC();
-							  } else {
-								  telemetry.addData("Zona Alvo", "DESCONHECIDA");
 								  tfod.shutdown();
+							  } else {
+								  telemetry.addData("Target Zone", "UNKNOWN");
 							  }
 							}
 						}
 						telemetry.update();
 					}
+				telemetry.addData("Status", "Estacionado");
 				telemetry.addData("Angulo", getAngle());
-				telemetry.addData("Target", Braco.getCurrentPosition());
-				telemetry.addData("Velocity", BracoPower);
-				telemetry.addData("Position", position);
 				telemetry.update();
 				}
 
@@ -257,10 +254,11 @@ public class RAutonomo extends LinearOpMode {
 	private void rotate(int degrees, double power)
 	{
 		double  leftPower, rightPower;
-		degrees -= 15; //erro de 15º
+		//degrees -= 15; //erro de 15º
 
 		// reseta o ângulo do imu
 		resetAngle();
+		resetEncoder();
 
 		int i = 0;
 		do {
@@ -285,7 +283,7 @@ public class RAutonomo extends LinearOpMode {
 				telemetry.update();
 			}
 
-		}while(i != 2);
+		}while(i != 5);
 
 		// rotate until turn is completed.
 		if (degrees < 0)
@@ -363,6 +361,7 @@ public class RAutonomo extends LinearOpMode {
 		Braco.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		Lancador.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		Coletor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		Transicao.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 		frontRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		backRightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -371,6 +370,7 @@ public class RAutonomo extends LinearOpMode {
 		Braco.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		Lancador.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		Coletor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		Transicao.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 	}
 
@@ -412,33 +412,61 @@ public class RAutonomo extends LinearOpMode {
 	}
 	private void zonaC(){
 		telemetry.addData("Msg", "To indo pra zona C");
-		telemetry.update();
-		//toFrente(180, .5);
-		//rotate(-45,.5);
-		//toFrente(30, .5);
-		//AbaixaBraco();
-		//sleep(750);
-		//OpenGarra();
-		//LevantaBraco();
-		//rotate(45, .5);
-		//toFrente(-30, .5);
-		sleep(5000);
+		Andar(2, .4, 1);
+		//rotate(5, .5);
+		sleep(500);
+		LancadorOn();
+		sleep(500);
+		Transicao.setPower(1);
+		sleep(500);
+		Coletor.setPower(1);
+		sleep(3000);
+		Andar(1, .2, 1);
+		sleep(1000);
+		rotate(179, .3);
 	}
 	private void zonaB(){
 		telemetry.addData("Msg", "To indo pra zona B");
-		//toFrente(150, .5);
-		//rotate(-45,.5);
-		//AbaixaBraco();
-		//OpenGarra();
-		sleep(5000);
+		
 	}
 	private void zonaA(){
 		telemetry.addData("Msg", "To indo pra zona A");
-		//toFrente(90, .5);
-		//rotate(-45,.5);
-		//toFrente(30, .5);
-		//AbaixaBraco();
-		//OpenGarra();
-		sleep(5000);
+
+	}
+	private void Andar(long tempo, double forca, int frentetras){
+		resetEncoder();
+		tempo *= 1000;
+		if(frentetras == 1){
+			forca = forca*-1;
+		}
+		else{
+			forca = forca;
+		}
+		frontRightMotor.setPower(forca);
+		backRightMotor.setPower(forca);
+		frontLeftMotor.setPower(forca);
+		backLeftMotor.setPower(forca);
+		sleep(tempo);
+		frontRightMotor.setPower(0);
+		backRightMotor.setPower(0);
+		frontLeftMotor.setPower(0);
+		backLeftMotor.setPower(0);
+	}
+	private void TransicaoOn()
+	{
+		Transicao.setPower(1);
+	}
+	private void TransicaoOff()
+	{
+		Transicao.setPower(0);
+	}
+
+	private void ColetorOn()
+	{
+		Coletor.setPower(1);
+	}
+	private void ColetorOff()
+	{
+		Coletor.setPower(0);
 	}
 }
