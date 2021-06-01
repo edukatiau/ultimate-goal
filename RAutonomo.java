@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.CRServo;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -31,7 +32,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 public class RAutonomo extends LinearOpMode {
 	DcMotor		 frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor, Lancador, Coletor, Transicao;
 	DcMotorEx	   Braco;
-	Servo		Garra;
+	Servo		Garra, Servinho;
 	BNO055IMU	   imu;
 	Orientation	 lastAngles = new Orientation();
 	double		  globalAngle = .30;
@@ -78,6 +79,8 @@ public class RAutonomo extends LinearOpMode {
 		Coletor = hardwareMap.get(DcMotor.class, "coletor");
 		Transicao = hardwareMap.get(DcMotor.class, "transicao");
 		Garra = hardwareMap.get(Servo.class, "garra");
+		Servinho = hardwareMap.get(Servo.class, "servinho");
+		//Servinho = hardwareMap.crservo.get("servinho");
 
 		/** Define a direção dos motores */
 		frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -86,7 +89,7 @@ public class RAutonomo extends LinearOpMode {
 		backRightMotor.setDirection(DcMotor.Direction.FORWARD);
 		
 		Braco.setDirection(DcMotor.Direction.FORWARD);
-		Lancador.setDirection(DcMotor.Direction.FORWARD);
+		Lancador.setDirection(DcMotor.Direction.REVERSE);
 		Coletor.setDirection(DcMotor.Direction.REVERSE);
 		Transicao.setDirection(DcMotor.Direction.REVERSE);
 
@@ -120,9 +123,14 @@ public class RAutonomo extends LinearOpMode {
 			tfod.activate();
 
 			// Zoom e Resolução
-			tfod.setZoom(1.3, 16.0 / 9.0);
+			tfod.setZoom(1.1, 16.0 / 9.0);
 		}
-
+		
+		FechaGarra();
+		Servinho.setPosition(1);
+		sleep(500);
+		//Servinho.setPosition(0);
+		
 		/** Aguarda o piloto pressionar START */
 		telemetry.addData(">", "Aguardando START");
 		telemetry.update();
@@ -150,7 +158,7 @@ public class RAutonomo extends LinearOpMode {
 						  for (Recognition recognition : updatedRecognitions) {
 							  telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
 							  telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-									  recognition.getLeft(), recognition.getTop());
+							recognition.getLeft(), recognition.getTop());
 							  telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
 									  recognition.getRight(), recognition.getBottom());
 
@@ -159,6 +167,7 @@ public class RAutonomo extends LinearOpMode {
 								  telemetry.addData("Target Zone", "B");
 								  zonaB();
 								  tfod.shutdown();
+								  
 							  } else if (recognition.getLabel().equals("Quad")) {
 								  telemetry.addData("Target Zone", "C");
 								  zonaC();
@@ -254,7 +263,7 @@ public class RAutonomo extends LinearOpMode {
 	private void rotate(int degrees, double power)
 	{
 		double  leftPower, rightPower;
-		//degrees -= 15; //erro de 15º
+		//degrees -= 20; //erro de 15º
 
 		// reseta o ângulo do imu
 		resetAngle();
@@ -263,22 +272,23 @@ public class RAutonomo extends LinearOpMode {
 		int i = 0;
 		do {
 			if (degrees < 0) {   // gira para direita
-				leftPower = -power;
-				rightPower = power;
-			} else if (degrees > 0) {   // gira para esquerda
 				leftPower = power;
 				rightPower = -power;
+			} else if (degrees > 0) {   // gira para esquerda
+				leftPower = -power;
+				rightPower = power;
 			} else return;
 
 			// define a potência para o giro
 			frontLeftMotor.setPower(leftPower);
-			backLeftMotor.setPower(leftPower);
 			frontRightMotor.setPower(rightPower);
+			backLeftMotor.setPower(leftPower);
 			backRightMotor.setPower(rightPower);
 			i++;
 
 			while(frontLeftMotor.isBusy() || frontRightMotor.isBusy() || backLeftMotor.isBusy() || backRightMotor.isBusy()) {
-				telemetry.addData("Status", "Girando");
+				telemetry.addData("Situação", "Girando");
+				telemetry.addData("Posição/Rotação", frontRightMotor.getCurrentPosition());
 				telemetry.addData("Angulo", getAngle());
 				telemetry.update();
 			}
@@ -374,15 +384,17 @@ public class RAutonomo extends LinearOpMode {
 
 	}
 
-	private void OpenGarra()
+	private void AbreGarra()
 	{
 		Garra.setPosition(1);
 		telemetry.addData("Status","Abrindo Garra");
+		telemetry.update();
 	}
-	private void CloseGarra()
+	private void FechaGarra()
 	{
-		Garra.setPosition(.5);
+		Garra.setPosition(.25);
 		telemetry.addData("Status","Fechando Garra");
+		telemetry.update();
 	}
 	private void LancadorOn()
 	{
@@ -392,46 +404,169 @@ public class RAutonomo extends LinearOpMode {
 	{
 		Lancador.setPower(0);
 	}
-	private void LevantaBraco()
-	{
-		telemetry.addData("Status","Subindo Braço");
-		position = 200;
-		Braco.setTargetPosition(position);
-		BracoPower += (Braco.getCurrentPosition() - position) * kP;
-		Braco.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-		Braco.setVelocity(BracoPower);
+	private void LevantaBraco(){
+	telemetry.addData("Status","Levantando Braço");
+	telemetry.update();
+	position = 0;
 	}
-	private void AbaixaBraco()
-	{
-		telemetry.addData("Status","Baixando Braço");
-		position = 0;
-		Braco.setTargetPosition(position);
-		BracoPower += (Braco.getCurrentPosition() - position) * kP;
-		Braco.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-		Braco.setVelocity(BracoPower);
+	
+	private void AbaixaBraco(){
+	telemetry.addData("Status","Descendo Braço");
+	telemetry.update();
+	position = -250;
 	}
+	
 	private void zonaC(){
 		telemetry.addData("Msg", "To indo pra zona C");
-		Andar(2, .4, 1);
-		//rotate(5, .5);
-		sleep(500);
-		LancadorOn();
-		sleep(500);
-		Transicao.setPower(1);
-		sleep(500);
-		Coletor.setPower(1);
-		sleep(3000);
-		Andar(1, .2, 1);
-		sleep(1000);
-		rotate(179, .3);
+		telemetry.update();
+				Andar(2, .4, 1);
+		
+				rotate(1, .2);
+				sleep(500);
+				
+				Lancador.setPower(.75);
+				sleep(500);
+				
+				Transicao.setPower(.8);
+				sleep(500);
+				
+				Coletor.setPower(1);
+				sleep(3000);
+				
+				Andar(1, .3, 1);
+				sleep(500);
+				
+				ColetorOff();
+				sleep(1);
+				
+				LancadorOff();
+				sleep(1);
+				
+				TransicaoOff();
+				sleep(1);
+				
+				rotate(2, .22);
+				sleep(100);
+				
+				Andar(2, .34, 1);
+				sleep(500);
+				
+				AbaixaBraco();
+				Braco.setTargetPosition(position);
+				BracoPower += (Braco.getCurrentPosition() - position)*kP;
+				Braco.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+				Braco.setPower(BracoPower);
+				sleep(1750);
+				
+				AbreGarra();
+				sleep(500);
+				
+				LevantaBraco();
+				Braco.setTargetPosition(position);
+				Braco.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+				Braco.setPower(.3);
+				sleep(500);
+				Braco.setPower(0);
+				
+				rotate(-3, .25);
+				sleep(100);
+				
+				Andar(1, .4, 0);
+				sleep(100);
+				
+				sleep(20000);
 	}
 	private void zonaB(){
 		telemetry.addData("Msg", "To indo pra zona B");
+		telemetry.update();
+				Andar(2, .4, 1);
 		
+				rotate(1, .23);
+				sleep(500);
+				
+				Lancador.setPower(.75);
+				sleep(500);
+				
+				Transicao.setPower(.8);
+				sleep(500);
+				
+				Coletor.setPower(1);
+				sleep(3000);
+				
+				Andar(1, .3, 1);
+				sleep(500);
+				
+				ColetorOff();
+				sleep(1);
+				
+				LancadorOff();
+				sleep(1);
+				
+				TransicaoOff();
+				sleep(1);
+				
+				rotate(2, .245);
+				sleep(500);
+				
+				Andar(1, .28, 1);
+				sleep(250);
+				
+				AbaixaBraco();
+				Braco.setTargetPosition(position);
+				BracoPower += (Braco.getCurrentPosition() - position)*kP;
+				Braco.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+				Braco.setPower(BracoPower);
+				sleep(1750);
+				
+				AbreGarra();
+				sleep(1);
+				
+				sleep(20000);
 	}
 	private void zonaA(){
 		telemetry.addData("Msg", "To indo pra zona A");
-
+		telemetry.update();
+		
+				Andar(2, .4, 1);
+		
+				rotate(1, .2);
+				sleep(500);
+				
+				Lancador.setPower(.75);
+				sleep(500);
+				
+				Transicao.setPower(.8);
+				sleep(500);
+				
+				Coletor.setPower(1);
+				sleep(3000);
+				
+				Andar(1, .3, 1);
+				sleep(500);
+				
+				ColetorOff();
+				sleep(1);
+				
+				LancadorOff();
+				sleep(1);
+				
+				TransicaoOff();
+				sleep(1);
+				
+				rotate(57, .45);
+				sleep(500);
+				
+				Andar(1, .3, 1);
+				
+				AbaixaBraco();
+				Braco.setTargetPosition(position);
+				BracoPower += (Braco.getCurrentPosition() - position)*kP;
+				Braco.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+				Braco.setPower(BracoPower);
+				sleep(1750);
+				AbreGarra();
+				sleep(1);
+				sleep(20000);
 	}
 	private void Andar(long tempo, double forca, int frentetras){
 		resetEncoder();
@@ -452,9 +587,11 @@ public class RAutonomo extends LinearOpMode {
 		frontLeftMotor.setPower(0);
 		backLeftMotor.setPower(0);
 	}
+	
 	private void TransicaoOn()
 	{
 		Transicao.setPower(1);
+		sleep(1);
 	}
 	private void TransicaoOff()
 	{
@@ -464,6 +601,7 @@ public class RAutonomo extends LinearOpMode {
 	private void ColetorOn()
 	{
 		Coletor.setPower(1);
+		sleep(1);
 	}
 	private void ColetorOff()
 	{
