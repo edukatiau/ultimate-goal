@@ -144,7 +144,7 @@ public class RTeleOp extends LinearOpMode {
 				BracoOn = !BracoOn;
 				telemetry.addData("Status","Descendo Braço");
 				telemetry.update();
-				position = 245;
+				position = -350;
 				sleep(500);
 			}
 			if(gamepad2.b && BracoOn == true){
