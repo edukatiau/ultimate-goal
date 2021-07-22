@@ -28,8 +28,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.Came
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
-@Autonomous(name = "RAutonomo", group = "Autonomous", preselectTeleOp = "RTeleOp")
-public class RAutonomo extends LinearOpMode {
+@Autonomous(name = "AutoEsquerda", group = "Autonomous", preselectTeleOp = "RTeleOp")
+public class AutoEsquerda extends LinearOpMode {
 	DcMotor		 frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor, Lancador, Coletor, Transicao;
 	DcMotorEx	   Braco;
 	Servo		Garra, Servinho;
@@ -80,7 +80,6 @@ public class RAutonomo extends LinearOpMode {
 		Transicao = hardwareMap.get(DcMotor.class, "transicao");
 		Garra = hardwareMap.get(Servo.class, "garra");
 		Servinho = hardwareMap.get(Servo.class, "servinho");
-		//Servinho = hardwareMap.crservo.get("servinho");
 
 		/** Define a direção dos motores */
 		frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
@@ -145,7 +144,7 @@ public class RAutonomo extends LinearOpMode {
 
 				sleep(500);
 
-				Lancador.setPower(.75);
+				Lancador.setPower(.80);
 
 				sleep(500);
 
@@ -153,7 +152,7 @@ public class RAutonomo extends LinearOpMode {
 
 				sleep(250);
 
-				Coletor(1);
+				Coletor.setPower(1);
 
 				sleep(3000); //lançou as argolas
 
@@ -383,7 +382,7 @@ public class RAutonomo extends LinearOpMode {
 
 	private void AbreGarra()
 	{
-		Garra.setPosition(1);
+		Garra.setPosition(.85);
 		telemetry.addData("Status","Abrindo Garra");
 		telemetry.update();
 	}
@@ -410,7 +409,7 @@ public class RAutonomo extends LinearOpMode {
 	private void AbaixaBraco(){
 	telemetry.addData("Status","Descendo Braço");
 	telemetry.update();
-	position = -250;
+	position = -370;
 	}
 	
 	private void zonaC(){
@@ -605,3 +604,17 @@ public class RAutonomo extends LinearOpMode {
 		Coletor.setPower(0);
 	}
 }
+
+/*
+bateria - potencia
+13.35 - 65,55% n da
+13.29 - 45% top
+13.25 - 45 n da
+13.22 - 55% top
+13.2 - 55% n da
+13.2 - 65% top
+13.17 - 65% +/- n da
+13.12 - 75% +/-
+13.12 - 80% top
+13.1 - 80% n da
+*/
