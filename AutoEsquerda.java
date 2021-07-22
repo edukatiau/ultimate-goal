@@ -141,54 +141,51 @@ public class RAutonomo extends LinearOpMode {
 		/** Funções a executar abaixo */
 		if (opModeIsActive()) {
 			while (opModeIsActive()) {
-				if (tfod != null) {
-					List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-					if (updatedRecognitions != null) {
-						telemetry.addData("# Object Detected", updatedRecognitions.size());
-						if (updatedRecognitions.size() == 0 ) {
-							// empty list.  no objects recognized.
-							telemetry.addData("TFOD", "No items detected.");
-							telemetry.addData("Target Zone", "A");
-							zonaA();
-							tfod.shutdown();
-						} else {
-						  // list is not empty.
-						  // step through the list of recognitions and display boundary info.
-						  int i = 0;
-						  for (Recognition recognition : updatedRecognitions) {
-							  telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-							  telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-							recognition.getLeft(), recognition.getTop());
-							  telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-									  recognition.getRight(), recognition.getBottom());
+				Andar(2, .4, 1); //chega ate o meio da arena
 
-							  // check label to see which target zone to go after.
-							  if (recognition.getLabel().equals("Single")) {
-								  telemetry.addData("Target Zone", "B");
-								  zonaB();
-								  tfod.shutdown();
-								  
-							  } else if (recognition.getLabel().equals("Quad")) {
-								  telemetry.addData("Target Zone", "C");
-								  zonaC();
-								  tfod.shutdown();
-							  } else {
-								  telemetry.addData("Target Zone", "UNKNOWN");
-							  }
-							}
-						}
-						telemetry.update();
-					}
+				sleep(500);
+
+				Lancador.setPower(.75);
+
+				sleep(500);
+
+				Transicao.setPower(.8);
+
+				sleep(250);
+
+				Coletor(1);
+
+				sleep(3000); //lançou as argolas
+
+				Coletor.setPower(0);
+				Lancador.setPower(0);
+				Transicao.setPower(0);
+
+				sleep(1); //desliga tudo
+
+				rotate(45, .45); //gira 45 graus
+
+				sleep(500);
+
+				AbaixaBraco();
+				Braco.setTargetPosition(position);
+				BracoPower += (Braco.getCurrentPosition() - position)*kP;
+				Braco.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+				Braco.setPower(BracoPower);
+
+				sleep(1750);
+				 //abaixa o braço
+
+				AbreGarra();
+				sleep(1);
+
+				sleep(20000);
+				
 				telemetry.addData("Status", "Estacionado");
 				telemetry.addData("Angulo", getAngle());
 				telemetry.update();
-				}
-
 			}
-		}
-
-		if (tfod != null) {
-			tfod.shutdown();
 		}
 	}
 	/**
