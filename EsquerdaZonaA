@@ -1,0 +1,42 @@
+Andar(2, .4, 1); //chega ate o meio da arena
+
+				sleep(500);
+
+				Lancador.setPower(.70);
+
+				sleep(500);
+
+				Transicao.setPower(.8);
+
+				sleep(250);
+
+				Coletor.setPower(1);
+
+				sleep(3000); //lançou as argolas
+
+				Coletor.setPower(0);
+				Lancador.setPower(0);
+				Transicao.setPower(0);
+
+				sleep(1); //desliga tudo
+				
+				Andar(1, .2 ,1);
+				
+				rotate(50, .45); //gira 45 graus
+
+				sleep(500);
+
+				AbaixaBraco();
+				Braco.setTargetPosition(position);
+				BracoPower += (Braco.getCurrentPosition() - position)*kP;
+				Braco.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+				Braco.setPower(BracoPower);
+
+				sleep(1750);
+				 //abaixa o braço
+
+				AbreGarra();
+				sleep(1);
+
+				sleep(20000);
